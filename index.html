@@ -1375,7 +1375,7 @@ Search for "STEP 5" in this file (around line 1450)
                         <i class="fa-solid fa-upload"></i> Import
                     </button>
                     <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importData(event)">
-                    <button class="btn btn-sm btn-primary" onclick="syncToSheets()" id="sync-btn" title="Sync to Google Sheets">
+                    <button class="btn btn-sm btn-primary" onclick="manualSync()" id="sync-btn" title="Sync to Google Sheets">
                         <i class="fa-solid fa-cloud-arrow-up"></i> Sync
                     </button>
                 </div>
@@ -1517,25 +1517,6 @@ Search for "STEP 5" in this file (around line 1450)
             <div class="wins-grid" id="wins-list"></div>
         </div>
 
-        <!-- PODCASTS TAB -->
-        <div id="podcasts" class="tab-content">
-            <h2><i class="fa-solid fa-podcast"></i>Today's Learning</h2>
-            
-            <div class="success-box">
-                <strong><i class="fa-solid fa-lightbulb"></i> Strategy:</strong> Listen during gym workouts, scenic drives, or meal prep for passive learning
-            </div>
-            
-            <div id="youtube-player-container" style="display: none; margin-bottom: 32px; padding: 20px; background: rgba(12, 18, 28, 0.25); backdrop-filter: blur(65px); border-radius: 16px; border: 1px solid rgba(100, 150, 255, 0.18); box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <h3 style="margin: 0; display: flex; align-items: center; gap: 10px;"><i class="fa-brands fa-youtube" style="color: #ff0000;"></i> Now Playing</h3>
-                    <button class="btn btn-sm" onclick="closePlayer()"><i class="fa-solid fa-xmark"></i> Close</button>
-                </div>
-                <div id="youtube-iframe-wrapper"></div>
-            </div>
-            
-            <div id="podcast-recommendations"></div>
-        </div>
-        
         <!-- SCHEDULE TAB -->
         <div id="schedule" class="tab-content">
             <h2><i class="fa-solid fa-clock"></i>Daily Protocol</h2>
@@ -1805,8 +1786,39 @@ Search for "STEP 5" in this file (around line 1450)
             maybeEnableSync();
         }
         
-        function maybeEnableSync() {
+        async function maybeEnableSync() {
             if (gapiInited && gisInited) {
+                updateSyncStatus('syncing', 'Checking...');
+                
+                // Try to restore token from localStorage
+                const storedToken = localStorage.getItem('googleAuthToken');
+                if (storedToken) {
+                    try {
+                        const token = JSON.parse(storedToken);
+                        // Set the token
+                        gapi.client.setToken(token);
+                        accessToken = token;
+                        
+                        // Try to load data - if it works, we're good!
+                        const loaded = await loadFromSheets();
+                        if (loaded) {
+                            // Token is valid, enable auto-sync
+                            enableAutoSync();
+                            renderKanban();
+                            renderMobileKanban();
+                            renderContacts();
+                            renderWins();
+                            updateStats();
+                            console.log('✅ Auto-loaded from cloud!');
+                            return;
+                        }
+                    } catch (err) {
+                        console.log('Token expired or invalid:', err);
+                        localStorage.removeItem('googleAuthToken');
+                    }
+                }
+                
+                // No valid token found
                 updateSyncStatus('offline', 'Click Sync');
             }
         }
@@ -1824,8 +1836,8 @@ Search for "STEP 5" in this file (around line 1450)
             }
         }
         
-        // Sync to Google Sheets
-        async function syncToSheets() {
+        // Manual Sync (First time authorization or force sync)
+        async function manualSync() {
             if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === 'YOUR_CLIENT_ID_HERE') {
                 alert('⚠️ Google Sheets not configured yet!\\n\\nPlease complete Step 5:\\n1. Open this HTML file in a text editor\\n2. Find: const GOOGLE_CLIENT_ID\\n3. Paste your Client ID and Sheet ID\\n4. Save and reload');
                 return;
@@ -1840,7 +1852,26 @@ Search for "STEP 5" in this file (around line 1450)
                     return;
                 }
                 
+                // Save token to localStorage for persistence
+                accessToken = gapi.client.getToken();
+                if (accessToken) {
+                    localStorage.setItem('googleAuthToken', JSON.stringify(accessToken));
+                    console.log('✅ Token saved to localStorage');
+                }
+                
+                // Enable auto-sync
+                enableAutoSync();
+                
+                // Save current data
                 await saveToSheets();
+                
+                // Load any data from sheets that might exist
+                await loadFromSheets();
+                renderKanban();
+                renderMobileKanban();
+                renderContacts();
+                renderWins();
+                updateStats();
             };
             
             if (gapi.client.getToken() === null) {
@@ -1856,6 +1887,7 @@ Search for "STEP 5" in this file (around line 1450)
                 const data = {
                     kanbanState: storage.getObj('kanbanState'),
                     contacts: storage.get('contacts'),
+                    dailyWins: storage.get('dailyWins'),
                     kanbanDate: localStorage.getItem('kanbanDate'),
                     lastSync: new Date().toISOString()
                 };
@@ -1894,8 +1926,9 @@ Search for "STEP 5" in this file (around line 1450)
                     const data = JSON.parse(response.result.values[0][0]);
                     localStorage.setItem('kanbanState', JSON.stringify(data.kanbanState || {}));
                     localStorage.setItem('contacts', JSON.stringify(data.contacts || []));
+                    localStorage.setItem('dailyWins', JSON.stringify(data.dailyWins || []));
                     if (data.kanbanDate) localStorage.setItem('kanbanDate', data.kanbanDate);
-                    updateSyncStatus('synced', 'Loaded from Cloud');
+                    updateSyncStatus('synced', 'Loaded ✓');
                     console.log('✅ Data loaded from Google Sheets');
                     return true;
                 }
@@ -1904,6 +1937,49 @@ Search for "STEP 5" in this file (around line 1450)
             }
             return false;
         }
+        
+        // AUTO-SYNC FUNCTIONALITY
+        let autoSyncEnabled = false;
+        let autoSyncTimeout;
+        
+        function enableAutoSync() {
+            autoSyncEnabled = true;
+            console.log('✅ Auto-sync enabled');
+            
+            // Update status
+            setTimeout(() => {
+                if (document.getElementById('sync-status').textContent.includes('Synced')) {
+                    updateSyncStatus('synced', 'Auto-Sync ON');
+                }
+            }, 2000);
+        }
+        
+        function triggerAutoSync() {
+            if (!autoSyncEnabled || !accessToken) return;
+            
+            // Clear existing timeout
+            clearTimeout(autoSyncTimeout);
+            
+            // Set new timeout for 3 seconds
+            updateSyncStatus('syncing', 'Syncing...');
+            autoSyncTimeout = setTimeout(async () => {
+                await saveToSheets();
+            }, 3000);
+        }
+        
+        // Override storage functions to trigger auto-sync
+        const storage = {
+            get: (key) => JSON.parse(localStorage.getItem(key) || '[]'),
+            set: (key, data) => {
+                localStorage.setItem(key, JSON.stringify(data));
+                triggerAutoSync();
+            },
+            getObj: (key) => JSON.parse(localStorage.getItem(key) || '{}'),
+            setObj: (key, data) => {
+                localStorage.setItem(key, JSON.stringify(data));
+                triggerAutoSync();
+            }
+        };
         
         // Export/Import backup functions
         function exportData() {

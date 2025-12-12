@@ -2031,26 +2031,8 @@ Search for "STEP 5" in this file (around line 1450)
         }
         
         let appData = null;
-        const storage = {
-            get: (key) => JSON.parse(localStorage.getItem(key) || '[]'),
-            set: (key, data) => { localStorage.setItem(key, JSON.stringify(data)); autoSync(); },
-            getObj: (key) => JSON.parse(localStorage.getItem(key) || '{}'),
-            setObj: (key, data) => { localStorage.setItem(key, JSON.stringify(data)); autoSync(); }
-        };
         
-        const podcastDatabase = [
-            { title: "The Project Management Podcast", channel: "Cornelius Fichtner", searchTerm: "project management podcast cornelius fichtner", desc: "PM strategies, methodologies, and real-world case studies", category: "Career", icon: "briefcase", days: [1,3,5] },
-            { title: "PM Happy Hour", channel: "Kim & Kate", searchTerm: "PM happy hour podcast", desc: "Product and PM careers with practical advice", category: "Career", icon: "users", days: [2,4] },
-            { title: "The Agile Coach", channel: "Agile", searchTerm: "agile coach podcast scrum", desc: "Scrum, Agile, SAFe aligned with your cert prep", category: "Learning", icon: "graduation-cap", days: [1,5] },
-            { title: "Lex Fridman Podcast", channel: "Lex Fridman", searchTerm: "lex fridman podcast", desc: "Deep tech and AI conversations", category: "Tech", icon: "microchip", days: [6] },
-            { title: "Acquired", channel: "Acquired", searchTerm: "acquired podcast", desc: "Amazon, Microsoft deep-dives", category: "Business", icon: "building", days: [0,3] },
-            { title: "Deep Questions", channel: "Cal Newport", searchTerm: "cal newport deep questions", desc: "Deep work and career strategy", category: "Strategy", icon: "brain", days: [1,4] },
-            { title: "The Tim Ferriss Show", channel: "Tim Ferriss", searchTerm: "tim ferriss show podcast", desc: "High-performer tactics and optimization", category: "Career", icon: "rocket", days: [2,5] },
-            { title: "Career Strategy Podcast", channel: "Sarah Doody", searchTerm: "sarah doody UX career", desc: "UX/PM career navigation and portfolios", category: "Career", icon: "compass", days: [3,6] },
-            { title: "Masters in Business", channel: "Bloomberg", searchTerm: "masters in business bloomberg", desc: "Finance industry analysis", category: "Business", icon: "chart-line", days: [0,4] },
-            { title: "The Knowledge Project", channel: "Shane Parrish", searchTerm: "knowledge project shane parrish", desc: "Decision frameworks and mental models", category: "Learning", icon: "book", days: [2,6] },
-            { title: "WAN Show", channel: "Linus Tech Tips", searchTerm: "WAN show linus tech tips", desc: "Tech news and gaming culture", category: "Tech", icon: "gamepad", days: [5] },
-        ];
+        
         
         function getPodcastRecommendations() {
             const today = new Date().getDay();
@@ -2062,72 +2044,9 @@ Search for "STEP 5" in this file (around line 1450)
             return todayPodcasts.slice(0, 2);
         }
         
-        function renderPodcasts() {
-            const recommendations = getPodcastRecommendations();
-            const container = document.getElementById('podcast-recommendations');
-            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            const today = new Date().getDay();
-            const isMobile = /Android|webOS|iPhone|iPad|iPod/i.test(navigator.userAgent);
-            
-            container.innerHTML = `
-                <div style="margin-bottom: 32px; padding: 20px; background: rgba(59, 130, 246, 0.12); backdrop-filter: blur(50px); border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.25);">
-                    <div style="font-weight: 600; color: #93c5fd; display: flex; align-items: center; gap: 10px;">
-                        <i class="fa-solid fa-calendar-day"></i> ${dayNames[today]} ${isMobile ? '(Tap to open YouTube)' : '(Click to play)'}
-                    </div>
-                </div>
-                ${recommendations.map((podcast, idx) => `
-                    <div class="podcast-card">
-                        <div class="podcast-meta-top">
-                            <div style="font-size: 0.75em; color: rgba(255, 255, 255, 0.5); display: flex; align-items: center; gap: 6px;">
-                                <i class="fa-solid fa-${podcast.icon}"></i> ${podcast.channel}
-                            </div>
-                            <span class="podcast-category">${podcast.category}</span>
-                        </div>
-                        <div class="podcast-title"><i class="fa-solid fa-podcast"></i> ${podcast.title}</div>
-                        <div class="podcast-desc">${podcast.desc}</div>
-                        ${isMobile ? 
-                            `<a href="https://www.youtube.com/results?search_query=${encodeURIComponent(podcast.searchTerm)}" class="btn btn-primary" style="text-decoration: none;">
-                                <i class="fa-brands fa-youtube"></i> Open YouTube
-                            </a>` :
-                            `<button class="btn btn-primary" onclick="togglePlayer('player-${idx}', '${podcast.searchTerm}')">
-                                <i class="fa-solid fa-play"></i> Play Episode
-                            </button>
-                            <div class="youtube-player-wrapper" id="player-${idx}" style="margin-top: 16px; border-radius: 12px; overflow: hidden; display: none;"></div>`
-                        }
-                    </div>
-                `).join('')}
-                
-                <div class="info-box" style="margin-top: 32px;">
-                    <strong><i class="fa-solid fa-clock"></i> Optimal Listening Times:</strong>
-                    <ul style="margin-top: 12px; padding-left: 24px; line-height: 1.8;">
-                        <li><i class="fa-solid fa-dumbbell"></i> Morning workout (06:30-07:30) — 60 minutes</li>
-                        <li><i class="fa-solid fa-car"></i> Scenic drives (17:30+) — 30-90 minutes</li>
-                        <li><i class="fa-solid fa-kitchen-set"></i> Meal preparation — 20-30 minutes</li>
-                        <li><i class="fa-solid fa-moon"></i> Evening wind-down — 30 minutes</li>
-                    </ul>
-                </div>
-            `;
-        }
         
-        function togglePlayer(playerId, searchTerm) {
-            const player = document.getElementById(playerId);
-            if (player.style.display === 'none' || !player.style.display) {
-                player.style.display = 'block';
-                player.innerHTML = `
-                    <iframe 
-                        width="100%" 
-                        height="315" 
-                        src="https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(searchTerm)}&autoplay=1" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowfullscreen
-                        style="border: none; border-radius: 12px;">
-                    </iframe>
-                `;
-            } else {
-                player.style.display = 'none';
-                player.innerHTML = '';
-            }
-        }
+        
+        
         
         function playYouTubePopup(searchTerm, title) {
             // Open YouTube search in a popup window (Picture-in-Picture style)
@@ -2146,21 +2065,15 @@ Search for "STEP 5" in this file (around line 1450)
             }
         }
         
-        function closePlayer() {
-            // Kept for compatibility
-            const playerContainer = document.getElementById('youtube-player-container');
-            if (playerContainer) {
-                playerContainer.style.display = 'none';
-            }
-        }
+        
         
         document.addEventListener('DOMContentLoaded', () => {
             updateStats();
             initKanban();
             renderContacts();
 
-            renderWins();            renderPlan();
-            renderPodcasts();
+            renderWins();
+            renderPlan();
             
             // Set today's date in wins form
             const winDateInput = document.getElementById('win-date');

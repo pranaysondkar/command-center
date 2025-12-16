@@ -2138,6 +2138,9 @@ Search for "STEP 5" in this file (around line 1450)
         
         
         document.addEventListener('DOMContentLoaded', () => {
+            // Process past days to detect skips FIRST
+            processHistoricalSkips();
+            
             updateStats();
             initKanban();
             renderContacts();
@@ -2210,6 +2213,52 @@ Search for "STEP 5" in this file (around line 1450)
             
             // DATE-SPECIFIC TASKS
             const dateSpecific = {
+                '2025-12-16': [
+                    // Monday Dec 16 - DETAILED TASKS
+                    { id: 'mon_1', text: 'Morning workout (YOU SKIPPED THIS YESTERDAY!)', time: '06:30', targetEnd: '07:30', priority: 'high', category: 'self' },
+                    { id: 'mon_2', text: 'Review Jobscan results for JPMorgan/Amazon/ServiceNow', time: '08:00', targetEnd: '08:30', priority: 'high', category: 'work' },
+                    { id: 'mon_3', text: 'Update resume based on Jobscan gaps', time: '08:30', targetEnd: '10:00', priority: 'high', category: 'work' },
+                    { id: 'mon_4', text: 'Apply: JPMorgan Chase PM role (with optimized resume)', time: '10:00', targetEnd: '11:00', priority: 'high', category: 'work' },
+                    { id: 'mon_5', text: 'Apply: Amazon PM role (tailor for tech)', time: '11:00', targetEnd: '12:00', priority: 'high', category: 'work' },
+                    { id: 'mon_6', text: 'Lunch break & 20-min walk', time: '12:30', targetEnd: '13:00', priority: 'high', category: 'self' },
+                    { id: 'mon_7', text: 'Find 3 referrals for JPMorgan role (State Street alumni)', time: '13:00', targetEnd: '14:00', priority: 'high', category: 'network' },
+                    { id: 'mon_8', text: 'Send referral emails (use templates from Dec 12)', time: '14:00', targetEnd: '15:00', priority: 'high', category: 'network' },
+                    { id: 'mon_9', text: 'SAFe prep - Module 1 Review (exam in 5 days!)', time: '15:00', targetEnd: '16:00', priority: 'high', category: 'cert' },
+                    { id: 'mon_10', text: 'State Street case study - Problem statement draft', time: '16:00', targetEnd: '17:00', priority: 'high', category: 'work' },
+                    { id: 'mon_11', text: 'Update Command Center + log Daily Win', time: '17:00', targetEnd: '17:15', priority: 'med', category: 'work' },
+                    { id: 'mon_12', text: 'Hard stop - evening routine', time: '18:00', targetEnd: '19:00', priority: 'high', category: 'self' },
+                    { id: 'mon_13', text: 'Dinner & gaming', time: '19:00', targetEnd: '21:00', priority: 'med', category: 'self' }
+                ],
+                
+                '2025-12-17': [
+                    // Tuesday Dec 17 - DETAILED TASKS
+                    { id: 'tue_1', text: 'Morning workout (BUILD THE HABIT!)', time: '06:30', targetEnd: '07:30', priority: 'high', category: 'self' },
+                    { id: 'tue_2', text: 'Apply: ServiceNow Engagement Mgr ($102K-$169K!)', time: '08:30', targetEnd: '09:30', priority: 'high', category: 'work' },
+                    { id: 'tue_3', text: 'Research + Apply: 2 more FinServ roles', time: '09:30', targetEnd: '11:00', priority: 'high', category: 'work' },
+                    { id: 'tue_4', text: 'Research + Apply: 2 SaaS/Tech PM roles', time: '11:00', targetEnd: '12:30', priority: 'high', category: 'work' },
+                    { id: 'tue_5', text: 'Lunch & walk', time: '12:30', targetEnd: '13:00', priority: 'high', category: 'self' },
+                    { id: 'tue_6', text: 'Follow up on Friday\\'s applications (5 emails)', time: '13:00', targetEnd: '13:45', priority: 'high', category: 'network' },
+                    { id: 'tue_7', text: 'Reach out to 5 Northeastern alumni at target companies', time: '13:45', targetEnd: '14:45', priority: 'high', category: 'network' },
+                    { id: 'tue_8', text: 'SAFe prep - Module 2 (exam in 4 days!)', time: '14:45', targetEnd: '16:00', priority: 'high', category: 'cert' },
+                    { id: 'tue_9', text: 'Case study - Solution approach & metrics draft', time: '16:00', targetEnd: '17:00', priority: 'high', category: 'work' },
+                    { id: 'tue_10', text: 'Update trackers + log Daily Win', time: '17:00', targetEnd: '17:15', priority: 'med', category: 'work' },
+                    { id: 'tue_11', text: 'Hard stop', time: '18:00', targetEnd: '19:00', priority: 'high', category: 'self' }
+                ],
+                
+                '2025-12-18': [
+                    // Wednesday Dec 18 - DETAILED TASKS  
+                    { id: 'wed_1', text: 'Morning workout (3-day streak attempt!)', time: '06:30', targetEnd: '07:30', priority: 'high', category: 'self' },
+                    { id: 'wed_2', text: 'Apply: 3 new researched roles', time: '08:30', targetEnd: '10:30', priority: 'high', category: 'work' },
+                    { id: 'wed_3', text: 'Follow up on Mon/Tue applications', time: '10:30', targetEnd: '11:15', priority: 'high', category: 'network' },
+                    { id: 'wed_4', text: 'Connect with hiring managers on LinkedIn (5 roles)', time: '11:15', targetEnd: '12:00', priority: 'high', category: 'network' },
+                    { id: 'wed_5', text: 'Lunch & walk', time: '12:30', targetEnd: '13:00', priority: 'high', category: 'self' },
+                    { id: 'wed_6', text: 'SAFe prep - Module 3 + practice test (exam in 3 days!)', time: '13:00', targetEnd: '14:30', priority: 'high', category: 'cert' },
+                    { id: 'wed_7', text: 'SAFe registration confirmation', time: '14:30', targetEnd: '14:45', priority: 'high', category: 'cert' },
+                    { id: 'wed_8', text: 'Case study - Results & impact section', time: '15:00', targetEnd: '16:30', priority: 'high', category: 'work' },
+                    { id: 'wed_9', text: 'Update all trackers + log Daily Win', time: '16:30', targetEnd: '16:45', priority: 'med', category: 'work' },
+                    { id: 'wed_10', text: 'Hard stop', time: '18:00', targetEnd: '19:00', priority: 'high', category: 'self' }
+                ],
+                
                 '2025-12-13': [
                     { id: 'fri_1', text: 'Morning workout', time: '06:30', targetEnd: '07:30', priority: 'high', category: 'self' },
                     { id: 'fri_2', text: 'Apply to 5 positions', time: '08:30', targetEnd: '10:30', priority: 'high', category: 'work' },
@@ -2313,11 +2362,62 @@ Search for "STEP 5" in this file (around line 1450)
             if (!draggedTaskId) return;
             
             const kanbanState = storage.getObj('kanbanState');
+            const taskHistory = storage.getObj('taskHistory') || {};
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
+            
+            // Get task details
+            const tasks = getTodayTasks();
+            const task = tasks.find(t => t.id === draggedTaskId);
+            
+            const oldColumn = kanbanState[draggedTaskId];
             kanbanState[draggedTaskId] = newColumn;
+            
+            // Track in history
+            if (!taskHistory[draggedTaskId]) {
+                taskHistory[draggedTaskId] = {
+                    taskId: draggedTaskId,
+                    text: task ? task.text : draggedTaskId,
+                    category: task ? task.category : 'unknown',
+                    dates: [],
+                    completions: [],
+                    skips: [],
+                    lateCompletions: []
+                };
+            }
+            
+            // Record date if not already recorded
+            if (!taskHistory[draggedTaskId].dates.includes(today)) {
+                taskHistory[draggedTaskId].dates.push(today);
+            }
+            
+            // Track completion
+            if (newColumn === 'done' && oldColumn !== 'done') {
+                const completedAt = now.toISOString();
+                taskHistory[draggedTaskId].completions.push({
+                    date: today,
+                    time: completedAt
+                });
+                
+                // Check if late
+                if (task && task.targetEnd) {
+                    const [targetHour, targetMin] = task.targetEnd.split(':');
+                    const targetTime = new Date();
+                    targetTime.setHours(parseInt(targetHour), parseInt(targetMin), 0);
+                    
+                    if (now > targetTime) {
+                        taskHistory[draggedTaskId].lateCompletions.push(completedAt);
+                    }
+                }
+            }
+            
             storage.setObj('kanbanState', kanbanState);
+            storage.setObj('taskHistory', taskHistory);
             
             draggedTaskId = null;
             renderKanban();
+            renderMobileKanban();
+            if (typeof renderCoachDashboard === 'function') renderCoachDashboard();
         }
         
         
@@ -2393,8 +2493,57 @@ Search for "STEP 5" in this file (around line 1450)
         
         function moveTaskMobile(taskId, newCol) {
             const kState = storage.getObj('kanbanState');
+            const taskHistory = storage.getObj('taskHistory') || {};
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
+            
+            // Get task details
+            const tasks = getTodayTasks();
+            const task = tasks.find(t => t.id === taskId);
+            
+            const oldCol = kState[taskId];
             kState[taskId] = newCol;
+            
+            // Initialize history if needed
+            if (!taskHistory[taskId]) {
+                taskHistory[taskId] = {
+                    taskId: taskId,
+                    text: task ? task.text : taskId,
+                    category: task ? task.category : 'unknown',
+                    dates: [],
+                    completions: [],
+                    skips: [],
+                    lateCompletions: []
+                };
+            }
+            
+            // Record date
+            if (!taskHistory[taskId].dates.includes(today)) {
+                taskHistory[taskId].dates.push(today);
+            }
+            
+            // Track completion
+            if (newCol === 'done' && oldCol !== 'done') {
+                const completedAt = now.toISOString();
+                taskHistory[taskId].completions.push({
+                    date: today,
+                    time: completedAt
+                });
+                
+                // Check if late
+                if (task && task.targetEnd) {
+                    const [targetHour, targetMin] = task.targetEnd.split(':');
+                    const targetTime = new Date();
+                    targetTime.setHours(parseInt(targetHour), parseInt(targetMin), 0);
+                    
+                    if (now > targetTime) {
+                        taskHistory[taskId].lateCompletions.push(completedAt);
+                    }
+                }
+            }
+            
             storage.setObj('kanbanState', kState);
+            storage.setObj('taskHistory', taskHistory);
             
             // Smooth transition
             const card = document.getElementById('mobile-card-' + taskId);
@@ -2405,11 +2554,13 @@ Search for "STEP 5" in this file (around line 1450)
                     renderMobileKanban();
                     renderKanban();
                     updateStats();
+                    if (typeof renderCoachDashboard === 'function') renderCoachDashboard();
                 }, 200);
             } else {
                 renderMobileKanban();
                 renderKanban();
                 updateStats();
+                if (typeof renderCoachDashboard === 'function') renderCoachDashboard();
             }
         }
         
@@ -3001,76 +3152,140 @@ Search for "STEP 5" in this file (around line 1450)
         // =========================================
         
         // Calculate accountability metrics
+        
+        // Process past days to mark skipped tasks
+        function processHistoricalSkips() {
+            const taskHistory = storage.getObj('taskHistory') || {};
+            const kState = storage.getObj('kanbanState');
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
+            
+            // Get all tasks from past 7 days
+            for (let i = 1; i <= 7; i++) {
+                const pastDate = new Date(now.getTime() - (i * 24 * 60 * 60 * 1000));
+                const pastDateStr = pastDate.toISOString().split('T')[0];
+                
+                // Get tasks for that date (need to simulate what tasks existed)
+                // For now, check recurring tasks like "morning workout", "PMP study"
+                const recurringTasks = {
+                    'morning_workout': { text: 'Morning workout', category: 'self' },
+                    'pmp_study': { text: 'PMP study', category: 'cert' },
+                    'applications': { text: 'Applications', category: 'work' },
+                    'networking': { text: 'Networking emails', category: 'network' }
+                };
+                
+                // Check each recurring task
+                Object.keys(recurringTasks).forEach(taskKey => {
+                    const taskId = taskKey + '_' + pastDateStr;
+                    
+                    // If this task was never completed, mark as skipped
+                    if (!taskHistory[taskId] || !taskHistory[taskId].completions || taskHistory[taskId].completions.length === 0) {
+                        if (!taskHistory[taskId]) {
+                            taskHistory[taskId] = {
+                                taskId: taskId,
+                                text: recurringTasks[taskKey].text,
+                                category: recurringTasks[taskKey].category,
+                                dates: [pastDateStr],
+                                completions: [],
+                                skips: [pastDateStr],
+                                lateCompletions: []
+                            };
+                        } else if (!taskHistory[taskId].skips) {
+                            taskHistory[taskId].skips = [pastDateStr];
+                        } else if (!taskHistory[taskId].skips.includes(pastDateStr)) {
+                            taskHistory[taskId].skips.push(pastDateStr);
+                        }
+                    }
+                });
+            }
+            
+            storage.setObj('taskHistory', taskHistory);
+            return taskHistory;
+        }
+        
         function calculateAccountability() {
+            // First process any historical skips
+            processHistoricalSkips();
+            
             const kState = storage.getObj('kanbanState');
             const taskHistory = storage.getObj('taskHistory') || {};
             const now = new Date();
             const today = now.toISOString().split('T')[0];
+            const startDate = new Date('2025-12-12');
+            const daysSinceStart = Math.floor((now - startDate) / (24 * 60 * 60 * 1000));
             
-            // Get today's tasks
+            // Count ALL skips across ALL history (not just today!)
+            let totalSkips = 0;
+            let totalCompletions = 0;
+            let totalLate = 0;
+            let totalOnTime = 0;
+            
+            Object.keys(taskHistory).forEach(taskId => {
+                const history = taskHistory[taskId];
+                if (history.skips) {
+                    totalSkips += history.skips.length;
+                }
+                if (history.completions) {
+                    totalCompletions += history.completions.length;
+                }
+                if (history.lateCompletions) {
+                    totalLate += history.lateCompletions.length;
+                }
+            });
+            
+            totalOnTime = totalCompletions - totalLate;
+            
+            // Today's tasks
             const todayTasks = getTodayTasks();
-            
-            // Count statuses
-            let completed = 0, onTime = 0, late = 0, skipped = 0, inProgress = 0;
+            let todayCompleted = 0;
+            let todaySkipped = 0;
+            let todayInProgress = 0;
             
             todayTasks.forEach(task => {
                 const status = kState[task.id];
-                const history = taskHistory[task.id] || {};
-                
                 if (status === 'done') {
-                    completed++;
-                    // Check if done on time
-                    if (history.completedAt && task.targetEnd) {
-                        const completedTime = new Date(history.completedAt);
-                        const [targetHour, targetMin] = task.targetEnd.split(':');
-                        const targetTime = new Date(today);
-                        targetTime.setHours(parseInt(targetHour), parseInt(targetMin), 0);
-                        
-                        if (completedTime <= targetTime) {
-                            onTime++;
-                        } else {
-                            late++;
-                        }
-                    } else {
-                        onTime++; // Assume on-time if no target
-                    }
+                    todayCompleted++;
                 } else if (status === 'progress') {
-                    inProgress++;
+                    todayInProgress++;
                 } else {
-                    // Check if task time has passed
+                    // Check if time has passed
                     if (task.time) {
                         const [hour, min] = task.time.split(':');
-                        const taskTime = new Date(today);
+                        const taskTime = new Date();
                         taskTime.setHours(parseInt(hour), parseInt(min), 0);
-                        
                         if (now > taskTime) {
-                            skipped++;
-                            // Record skip in history
-                            if (!history.skips) history.skips = [];
-                            if (!history.skips.includes(today)) {
-                                history.skips.push(today);
-                                history.skipCount = history.skips.length;
-                                taskHistory[task.id] = history;
-                                storage.setObj('taskHistory', taskHistory);
-                            }
+                            todaySkipped++;
                         }
                     }
                 }
             });
             
-            const total = todayTasks.length;
-            const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
-            const onTimeRate = completed > 0 ? Math.round((onTime / completed) * 100) : 0;
+            const todayTotal = todayTasks.length;
+            const todayCompletionRate = todayTotal > 0 ? Math.round((todayCompleted / todayTotal) * 100) : 0;
+            const overallOnTimeRate = totalCompletions > 0 ? Math.round((totalOnTime / totalCompletions) * 100) : 0;
+            
+            // Calculate streak
+            const streakData = storage.getObj('streakData') || { current: 0, longest: 0 };
             
             return {
-                total,
-                completed,
-                onTime,
-                late,
-                skipped,
-                inProgress,
-                completionRate,
-                onTimeRate
+                // Campaign totals
+                totalSkips: totalSkips,
+                totalCompletions: totalCompletions,
+                totalOnTime: totalOnTime,
+                totalLate: totalLate,
+                daysSinceStart: daysSinceStart,
+                
+                // Today
+                todayTotal: todayTotal,
+                todayCompleted: todayCompleted,
+                todayInProgress: todayInProgress,
+                todaySkipped: todaySkipped,
+                todayCompletionRate: todayCompletionRate,
+                
+                // Rates
+                overallOnTimeRate: overallOnTimeRate,
+                currentStreak: streakData.current,
+                longestStreak: streakData.longest
             };
         }
         
@@ -3093,29 +3308,37 @@ Search for "STEP 5" in this file (around line 1450)
                 }
             });
             
-            // Detect gym/workout pattern (critical!)
+            // Detect gym/workout pattern - SHOW EVEN 1 SKIP!
             const workoutSkips = Object.keys(taskSkips).filter(text => 
                 text.toLowerCase().includes('workout') || text.toLowerCase().includes('gym')
             ).reduce((sum, text) => sum + taskSkips[text], 0);
             
-            if (workoutSkips >= 3) {
+            if (workoutSkips >= 1) {
+                const severity = workoutSkips >= 3 ? 'critical' : 'warning';
+                const message = workoutSkips === 1 
+                    ? `Workout skipped 1x - Don't let this become a habit.`
+                    : `Gym skipped ${workoutSkips}x - Physical health declining. This affects everything.`;
                 patterns.push({
-                    type: 'critical',
-                    message: `Gym skipped ${workoutSkips}x - Physical health declining. This affects everything else.`,
+                    type: severity,
+                    message: message,
                     icon: 'dumbbell',
                     action: 'Schedule gym for evening if mornings don\'t work'
                 });
             }
             
-            // Detect PMP/study avoidance
+            // Detect PMP/study avoidance - SHOW EVEN 1 SKIP!
             const studySkips = Object.keys(taskSkips).filter(text => 
-                text.toLowerCase().includes('pmp') || text.toLowerCase().includes('study')
+                text.toLowerCase().includes('pmp') || text.toLowerCase().includes('study') || text.toLowerCase().includes('safe')
             ).reduce((sum, text) => sum + taskSkips[text], 0);
             
-            if (studySkips >= 4) {
+            if (studySkips >= 1) {
+                const severity = studySkips >= 3 ? 'critical' : 'warning';
+                const message = studySkips === 1
+                    ? `Study skipped 1x - SAFe exam is Dec 21. Start preparing.`
+                    : `Study avoided ${studySkips}x - You're not ready for SAFe exam. Study NOW.`;
                 patterns.push({
-                    type: 'warning',
-                    message: `PMP study avoided ${studySkips}x - You\'re not going to pass if you don\'t study.`,
+                    type: severity,
+                    message: message,
                     icon: 'graduation-cap',
                     action: 'Break into 20-min chunks. Just start.'
                 });
@@ -3162,43 +3385,57 @@ Search for "STEP 5" in this file (around line 1450)
             
             let message = '';
             
-            // Time-based coaching
+            // Time-based coaching with REAL data
             if (hour >= 6 && hour < 10) {
                 // Morning
-                if (streakData.current >= 5) {
-                    message = `🔥 ${streakData.current}-day streak! You\'re unstoppable. Today\'s first task: hardest one first.`;
-                } else if (metrics.completionRate < 60) {
-                    message = `⚠️ Last week: ${metrics.completionRate}% completion. That\'s not good enough. Today is different. Prove it.`;
+                if (metrics.totalSkips >= 5) {
+                    message = `⚠️ You've skipped ${metrics.totalSkips} tasks total. That's ${metrics.totalSkips} times you chose easy over growth. Today is different. Prove it.`;
+                } else if (streakData.current >= 3) {
+                    message = `🔥 ${streakData.current}-day streak! Keep going. First task: hardest one first.`;
+                } else if (metrics.totalSkips > 0) {
+                    message = `💪 Morning. ${metrics.totalSkips} skips on record. Today: complete ${metrics.todayTotal} tasks to stay on track.`;
                 } else {
-                    message = `💪 Morning, Pranay. ${metrics.total} tasks today. Start with resume if not done yet.`;
+                    message = `💪 Good morning, Pranay. ${metrics.todayTotal} tasks today. Make them count.`;
                 }
-            } else if (hour >= 12 && hour < 14) {
+            } else if (hour >= 10 && hour < 14) {
                 // Midday
-                const expectedDone = Math.floor(metrics.total * 0.4);
-                if (metrics.completed >= expectedDone) {
-                    message = `✅ ${metrics.completed}/${metrics.total} done. You\'re on pace. Don\'t slow down.`;
+                const expectedDone = Math.floor(metrics.todayTotal * 0.5);
+                if (metrics.todayCompleted >= expectedDone) {
+                    message = `✅ ${metrics.todayCompleted}/${metrics.todayTotal} done. On pace. Keep executing.`;
+                } else if (metrics.todayCompleted === 0) {
+                    message = `🚨 NOTHING DONE YET. It's almost noon. Stop procrastinating. START NOW.`;
                 } else {
-                    message = `⏰ Only ${metrics.completed}/${metrics.total}. Expected ${expectedDone} by now. Catch up this afternoon.`;
+                    message = `⏰ Only ${metrics.todayCompleted}/${metrics.todayTotal} done. Expected ${expectedDone} by now. Catch up this afternoon.`;
                 }
-            } else if (hour >= 18 && hour < 20) {
-                // Evening
-                if (metrics.completionRate >= 85) {
-                    message = `🌟 ${metrics.completionRate}% completion! Exceptional. You earned your evening. Game on.`;
-                } else if (metrics.completionRate >= 70) {
-                    message = `👍 ${metrics.completionRate}% today. Decent, not great. Tomorrow: aim for 90%+.`;
+            } else if (hour >= 18 && hour < 22) {
+                // Evening review
+                if (metrics.todayCompletionRate >= 90) {
+                    message = `🌟 ${metrics.todayCompletionRate}% today! Exceptional execution. You earned your evening.`;
+                } else if (metrics.todayCompletionRate >= 75) {
+                    message = `👍 ${metrics.todayCompletionRate}% today. Solid, but you can do better. Tomorrow: 90%+.`;
+                } else if (metrics.todayCompletionRate >= 50) {
+                    message = `📊 ${metrics.todayCompletionRate}% today. That's average. You're not average. Do better tomorrow.`;
                 } else {
-                    message = `📉 Only ${metrics.completionRate}% today. ${metrics.skipped} tasks skipped. What happened? Don\'t repeat tomorrow.`;
+                    message = `📉 ${metrics.todayCompletionRate}% today. ${metrics.todaySkipped} tasks skipped. This is failing. What's blocking you? Fix it tomorrow.`;
                 }
             } else {
-                // Default
-                message = `📊 Week ${Math.floor((new Date() - new Date('2025-12-12')) / 604800000) + 1} - Completion: ${metrics.completionRate}%`;
+                // Default/late night
+                message = `📊 Day ${metrics.daysSinceStart + 1} of campaign. ${metrics.totalSkips} total skips. ${metrics.totalCompletions} completions. ${metrics.overallOnTimeRate}% on-time rate.`;
             }
             
             // Add critical pattern alerts
             const criticalPattern = patterns.find(p => p.type === 'critical');
             if (criticalPattern) {
-                message += `\n\n🚨 CRITICAL: ${criticalPattern.message}\n→ ${criticalPattern.action}`;
+                message += `\n\n🚨 ${criticalPattern.message}\n→ ${criticalPattern.action}`;
             }
+            
+            const warningPattern = patterns.find(p => p.type === 'warning');
+            if (warningPattern && !criticalPattern) {
+                message += `\n\n⚠️ ${warningPattern.message}\n→ ${warningPattern.action}`;
+            }
+            
+            return message;
+        }
             
             return message;
         }
@@ -3209,20 +3446,34 @@ Search for "STEP 5" in this file (around line 1450)
             const patterns = detectPatterns();
             const streakData = storage.getObj('streakData') || { current: 0, longest: 0 };
             
-            // Update metrics
-            document.getElementById('week-completion').textContent = metrics.completionRate + '%';
-            document.getElementById('current-streak').textContent = streakData.current + ' 🔥';
-            document.getElementById('ontime-rate').textContent = metrics.onTimeRate + '%';
-            document.getElementById('tasks-skipped').textContent = metrics.skipped;
+            // Update metrics - SHOW CAMPAIGN TOTALS
+            const el_weekcomp = document.getElementById('week-completion');
+            const el_streak = document.getElementById('current-streak');
+            const el_ontime = document.getElementById('ontime-rate');
+            const el_skipped = document.getElementById('tasks-skipped');
             
-            document.getElementById('completed-ontime').textContent = metrics.onTime;
-            document.getElementById('completed-late').textContent = metrics.late;
-            document.getElementById('in-progress').textContent = metrics.inProgress;
-            document.getElementById('skipped-total').textContent = metrics.skipped;
+            if (el_weekcomp) el_weekcomp.textContent = metrics.todayCompletionRate + '%';
+            if (el_streak) el_streak.textContent = streakData.current + ' 🔥';
+            if (el_ontime) el_ontime.textContent = metrics.overallOnTimeRate + '%';
+            if (el_skipped) el_skipped.textContent = metrics.totalSkips; // TOTAL CAMPAIGN SKIPS!
             
-            // Show coaching message
+            const el_ontime_detail = document.getElementById('completed-ontime');
+            const el_late_detail = document.getElementById('completed-late');
+            const el_progress = document.getElementById('in-progress');
+            const el_skipped_detail = document.getElementById('skipped-total');
+            
+            if (el_ontime_detail) el_ontime_detail.textContent = metrics.totalOnTime;
+            if (el_late_detail) el_late_detail.textContent = metrics.totalLate;
+            if (el_progress) el_progress.textContent = metrics.todayInProgress;
+            if (el_skipped_detail) el_skipped_detail.textContent = metrics.totalSkips;
+            
+            // Show coaching message with proper formatting
             const coachMessage = getCoachingMessage();
-            document.getElementById('coach-message').textContent = coachMessage;
+            const coachMsgEl = document.getElementById('coach-message');
+            if (coachMsgEl) {
+                // Replace \n with <br> for HTML display
+                coachMsgEl.innerHTML = coachMessage.replace(/\n/g, '<br>');
+            }
             
             // Show patterns
             const patternBox = document.getElementById('pattern-alerts');

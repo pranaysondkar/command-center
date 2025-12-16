@@ -2565,7 +2565,7 @@ Search for "STEP 5" in this file (around line 1450)
         }
         
         function resetWithJustification() {
-            const reason = prompt('⚠️ HARD MODE RESET\n\nResetting abandons your accountability.\nSkipped tasks won\'t disappear - they\'ll haunt you.\n\nWhy are you resetting?\n(Be honest with yourself)');
+            const reason = prompt('⚠️ HARD MODE RESET\n\nResetting abandons your accountability.\nSkipped tasks won't disappear - they\'ll haunt you.\n\nWhy are you resetting?\n(Be honest with yourself)');
             
             if (!reason || reason.trim() === '') {
                 alert('Reset cancelled. Face your skipped tasks.');
@@ -3322,7 +3322,7 @@ Search for "STEP 5" in this file (around line 1450)
                     type: severity,
                     message: message,
                     icon: 'dumbbell',
-                    action: 'Schedule gym for evening if mornings don\'t work'
+                    action: 'Schedule gym for evening if mornings don't work'
                 });
             }
             
@@ -3433,9 +3433,6 @@ Search for "STEP 5" in this file (around line 1450)
             if (warningPattern && !criticalPattern) {
                 message += `\n\n⚠️ ${warningPattern.message}\n→ ${warningPattern.action}`;
             }
-            
-            return message;
-        }
             
             return message;
         }
